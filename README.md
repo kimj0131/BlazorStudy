@@ -1,1 +1,1 @@
-# BlazorApp
+# Learn Blazor
