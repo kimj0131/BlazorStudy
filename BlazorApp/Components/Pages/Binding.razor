@@ -1,0 +1,15 @@
+﻿@page "/binding"
+
+<h3>Binding</h3>
+
+<!-- 단방향 바인딩 -->
+<p>Value : @_value</p>
+<!-- 양방향 바인딩 -->
+<input type="range" step="1" @bind-value="_value" @bind-value:event="oninput"/>
+
+@code {
+
+	int _value = 15;
+	
+
+}
