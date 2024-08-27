@@ -1,0 +1,63 @@
+﻿@page "/user"
+
+@using BlazorApp.Data
+
+<h3>Online Users</h3>
+
+<p>
+	User : <b>@_users.Count()</b>
+</p>
+
+<br />
+
+<ul class="list-group">
+	@foreach (UserData user in _users)
+	{
+		<li @key="user" class="list-group-item">
+			<button type="button" class="btn btn-link" @onclick="(() => KickUser(user))">[Kick]</button>
+			<label>@user.Name</label>
+		</li>
+	}
+</ul>
+
+<br />
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<input class="form-control" placeholder="Add User" @bind-value="_inputName" />
+		</div>
+		<div class="col">
+			<button class="btn btn-primary" type="button" @onclick="AddUser">Add a User</button>
+		</div>
+	</div>
+</div>
+
+
+@code {
+	List<UserData> _users = new List<UserData>();
+
+	string _inputName;
+
+	// 컴포넌트가 시작될때 발동되는 메서드
+	protected override void OnInitialized()
+	{
+		_users.Add(new UserData() { Name = "intax" });
+		_users.Add(new UserData() { Name = "rumix" }); 
+		_users.Add(new UserData() { Name = "ismart" });
+	}
+
+	void AddUser()
+	{
+		if (_inputName == "" || _inputName == null)
+			return;
+
+		_users.Add(new UserData() { Name = _inputName });
+		_inputName = "";
+	}
+
+	void KickUser(UserData user)
+	{
+		_users.Remove(user);
+	}
+}
