@@ -28,7 +28,9 @@
 			<input class="form-control" placeholder="Add User" @bind-value="_inputName" />
 		</div>
 		<div class="col">
-			<button class="btn btn-primary" type="button" @onclick="AddUser">Add a User</button>
+			<!-- 속성(attribute)에도 binding을 할 수 있다 -->
+			<!-- conditional attribute 속성 자체에 조건을 붙일 수도 있다 -->
+			<button class="@_btnClass" type="button" @onclick="AddUser" disabled="@(_users.Count() >= 5)">Add a User</button>
 		</div>
 	</div>
 </div>
@@ -37,7 +39,10 @@
 @code {
 	List<UserData> _users = new List<UserData>();
 
-	string _inputName;
+	private bool showAlert = false;
+
+	private string _inputName = string.Empty;
+	string _btnClass = "btn btn-primary";
 
 	// 컴포넌트가 시작될때 발동되는 메서드
 	protected override void OnInitialized()
@@ -46,18 +51,47 @@
 		_users.Add(new UserData() { Name = "rumix" }); 
 		_users.Add(new UserData() { Name = "ismart" });
 	}
+	protected override void OnAfterRender(bool firstRender)
+	{
+		RefrashButton();
+
+		if (showAlert)
+		{
+			showAlert = false;
+			StateHasChanged();
+		}
+	}
 
 	void AddUser()
 	{
-		if (_inputName == "" || _inputName == null)
-			return;
-
-		_users.Add(new UserData() { Name = _inputName });
-		_inputName = "";
+		if (string.IsNullOrEmpty(_inputName))
+		{
+			showAlert = true;
+		}
+		else
+		{
+			_users.Add(new UserData() { Name = _inputName });
+			_inputName = string.Empty;
+		}
 	}
+
 
 	void KickUser(UserData user)
 	{
 		_users.Remove(user);
 	}
+
+	void RefrashButton()
+	{
+		if (_users.Count() % 2 == 0)
+			_btnClass = "btn btn-primary";
+		else
+			_btnClass = "btn btn-secondary";
+	}
+
+}
+
+@if (showAlert)
+{
+	<script>alert('내용을 입력해야 합니다');</script>
 }
