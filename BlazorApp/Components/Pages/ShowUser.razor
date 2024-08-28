@@ -1,0 +1,47 @@
+﻿@using BlazorApp.Data
+
+
+<p>
+	User : <b>@Users.Count()</b>
+</p>
+
+<br />
+
+<ul class="list-group">
+	@foreach (UserData user in Users)
+	{
+		<li @key="user" class="list-group-item">
+			<button type="button" class="btn btn-link" @onclick="(() => KickUser(user))">[Kick]</button>
+			<label>@user.Name</label>
+		</li>
+	}
+</ul>
+
+@code {
+
+	[Parameter]
+	public List<UserData> Users { get; set; }
+
+	[Parameter]
+	public EventCallback CallbackTest{ get; set; }
+
+	// 컴포넌트가 시작될때 발동되는 메서드
+	protected override void OnInitialized()
+	{
+		Users.Add(new UserData() { Name = "intax" });
+		Users.Add(new UserData() { Name = "rumix" });
+		Users.Add(new UserData() { Name = "ismart" });
+	}
+
+	public void AddUser(UserData user)
+	{
+		Users.Add(user);
+	}
+
+	public void KickUser(UserData user)
+	{
+		Users.Remove(user);
+
+		CallbackTest.InvokeAsync(null);
+	}
+}
