@@ -3,6 +3,9 @@
 
 <PageTitle>Weather</PageTitle>
 
+@* Templated Component *@
+@* RenderFragment로 이루어진 Razor Component *@
+
 <h1>Weather</h1>
 
 <p>This component demonstrates showing data.</p>
@@ -13,7 +16,22 @@
 }
 else
 {
-    <table class="table">
+    <TableTemplate Items="forecasts" TItem="WeatherForecast">
+        <Header>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>
+            <th>Summary</th>
+        </Header>
+        <Row Context="forecast">
+            <td>@forecast.Date.ToShortDateString()</td>
+            <td>@forecast.TemperatureC</td>
+            <td>@forecast.TemperatureF</td>
+            <td>@forecast.Summary</td>
+        </Row>
+    </TableTemplate>
+
+    @* <table class="table">
         <thead>
             <tr>
                 <th>Date</th>
@@ -33,7 +51,7 @@ else
                 </tr>
             }
         </tbody>
-    </table>
+    </table> *@
 }
 
 @code {
@@ -54,7 +72,7 @@ else
         }).ToArray();
     }
 
-    private class WeatherForecast
+    public class WeatherForecast
     {
         public DateOnly Date { get; set; }
         public int TemperatureC { get; set; }
