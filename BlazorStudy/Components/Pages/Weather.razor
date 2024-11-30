@@ -1,4 +1,5 @@
 ﻿@page "/weather"
+@using System.ComponentModel.DataAnnotations
 @attribute [StreamRendering]
 
 <PageTitle>Weather</PageTitle>
@@ -34,10 +35,48 @@ else
             }
         </tbody>
     </table>
+
+    <button class="btn btn-primary" @onclick="AddNewForecast">
+        Add New Forecast
+    </button>
+
+    if (_showPopup)
+    {
+        <div class="modal" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Add Forecast</h3>
+                        <button type="button" class="btn-close" @onclick="ClosePopup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <EditForm Model="_addForecast" OnValidSubmit="SaveForecast">
+
+                            @* Form Validation 기능을 활성화 *@
+                            <DataAnnotationsValidator />
+                            @* 에러가 있으면 메세지 상세 출력 *@
+                            <ValidationSummary />
+
+                            <label for="TemperatureC">TemperatureC</label>
+                            <InputNumber class="form-control" placeholder="TemperatureC" @bind-Value="_addForecast.TemperatureC" />
+                            <label for="Summary">Summary</label>
+                            <InputText class="form-control" placeholder="Summary" @bind-Value="_addForecast.Summary" />
+                            <br />
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private List<WeatherForecast> forecasts;
+    // private WeatherForecast[]? forecasts;
+
+    bool _showPopup = false;
+    WeatherForecast _addForecast;
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,14 +90,43 @@ else
             Date = startDate.AddDays(index),
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
+        }).ToList();
+        // }).ToArray();
     }
 
     private class WeatherForecast
     {
         public DateOnly Date { get; set; }
+
+        // Blazor에서는 필수값 지정을 쉽게 할 수 있다
+        // 범위도 지정가능
+        [Required(ErrorMessage = "Need TemperatureC")]
+        [Range(typeof(int), "-100", "100")]
         public int TemperatureC { get; set; }
+
+        [Required(ErrorMessage = "Need Summary")]
+        [StringLength(10, MinimumLength = 2, ErrorMessage = "2~10")]
         public string? Summary { get; set; }
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+
+    private void AddNewForecast()
+    {
+        Console.WriteLine("진입테스트");
+        _showPopup = true;
+        _addForecast = new WeatherForecast();
+        StateHasChanged();
+    }
+
+    void SaveForecast()
+    {
+        _showPopup = false;
+        _addForecast.Date = DateOnly.FromDateTime(DateTime.Now);
+        forecasts.Add(_addForecast);
+    }
+
+    void ClosePopup()
+    {
+        _showPopup = false;
     }
 }
