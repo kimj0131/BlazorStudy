@@ -1,0 +1,49 @@
+﻿@page "/JSInterop"
+
+@* 자바스크립트 연동을 위한 의존성 주입 *@
+@inject IJSRuntime IJSRuntime
+
+<h3>JSInterop</h3>
+
+<div>
+    <button type="button" class="btn btn-primary" @onclick="HelloWorld">
+        HelloWorld
+    </button>
+</div>
+
+<br />
+
+<div>
+    <button type="button" class="btn btn-primary" @onclick="InputName">
+        Input Name
+    </button>
+    <p>@_name</p>
+</div>
+
+@code {
+    string _name = "";
+
+    public async Task HelloWorld()
+    {
+        try
+        {
+            await IJSRuntime.InvokeVoidAsync("testFunction.helloWorld", null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"자바스크립트 호출 중 예외 발생: {ex.Message}");
+        }
+    }
+
+    public async Task InputName()
+    {
+        try
+        {
+            _name = await IJSRuntime.InvokeAsync<string>("testFunction.inputName", "Input Name");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"자바스크립트 호출 중 예외 발생: {ex.Message}");
+        }
+    }
+}
